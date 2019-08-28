@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +15,78 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerInside"
-            android:src="@mipmap/ic_launcher_family" />
+            android:src="@mipmap/ic_launcher_family"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+            android:id="@+id/slogan_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/conventional_padding_large"
+            android:gravity="left"
+            android:fontFamily="@font/croissant_sandwich_bold"
+            android:text="@string/splash_activity_title"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_xlarge"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.2" />
+
+    <TextView
+            android:id="@+id/slogan_sharon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/whale_i_tried_ttf"
+            android:text="@string/splash_activity_slogan"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.7" />
+    <TextView
+            android:id="@+id/slogan_ethan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/lettering_3d"
+            android:text="@string/splash_activity_slogan"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/slogan_sharon" />
+    <TextView
+            android:id="@+id/slogan_gigi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/quite_magical"
+            android:text="@string/splash_activity_slogan"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/slogan_ethan" />
+    <TextView
+            android:id="@+id/slogan_charles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/angeltearstrial_poar"
+            android:text="@string/splash_activity_slogan"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_xlarge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/slogan_gigi" />
 
 
     <!-- This FrameLayout insets its children based on system windows using
@@ -22,8 +94,8 @@
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:visibility="gone">
 
         <LinearLayout
                 android:id="@+id/fullscreen_content_controls"
@@ -46,4 +118,4 @@
         </LinearLayout>
     </FrameLayout>
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

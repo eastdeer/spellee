@@ -8,7 +8,9 @@ import com.charlesma.spellee.test.abrsm.datamodel.Amplitude
 import com.charlesma.spellee.test.abrsm.datamodel.Chapter
 import com.charlesma.spellee.test.abrsm.datamodel.Snippet
 import com.charlesma.spellee.test.abrsm.repository.PianoRepository
+import com.charlesma.spellee.util.AnalyticsUtil
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.system.measureTimeMillis
 
@@ -17,7 +19,7 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
         const val SAMPLE_INTERVAL = 128L
         const val SAMPLE_AVG_COUNT = 32
         const val AMPLITUDE_THRESHOLD = 8800
-        const val SINGLE_SNIPPET_DURATION = 15 * 1000
+        const val SINGLE_SNIPPET_DURATION_IN_SECONDS = 10
     }
 
     val pianoRepository by lazy { PianoRepository(application) }
@@ -52,6 +54,9 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
 
     val currentShuffledSnippetListLiveData =
         Transformations.map(currentChapterLiveData) {
+            viewModelScope.launch {
+                delay(2048)
+            }
             it?.snippetList?.toMutableList()?.map { snippet ->
                 snippet.apply {
                     statusColor.set(Snippet.ITEM_INTACT)
@@ -96,25 +101,32 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
             liveData {
                 value?.let {
 
+                    currentChapterLiveData.value?.let {
+                        AnalyticsUtil.logABRSMAdapterDrillStart(
+                            bookInRepo.value?.name ?: "",
+                            it.name,
+                            it.drillCount.get()
+                        )
+                    }
                     val performanceDuration =
                         measureTimeMillis {
                             it.forEachIndexed { index, snippet ->
                                 snippet.apply {
                                     statusColor.set(Snippet.ITEM_CURRENT)
                                 }
-                                emit(Pair("Please Perform.. ${snippet.name}",index))
+                                emit(Pair("Please Perform.. ${snippet.name}", index))
                                 waitForPerformanceCompleteSuspend()
                                 snippet.apply {
                                     statusColor.set(Snippet.ITEM_PASSED)
                                 }
                             }
                         }
-                    emit(Pair("Chapter finished. ${AFTERWORD.name}",-1))
+                    emit(Pair("Chapter finished. ${AFTERWORD.name}", -1))
 
                     currentChapterLiveData.value?.let { chapter ->
                         onChapterDrillComplete(
                             chapter,
-                            performanceDuration
+                            performanceDuration shr 10
                         )
                     }
                 }
@@ -122,8 +134,8 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
         }
 
 
-    private val _drillCompleteAwardLiveDate = MutableLiveData<Pair<Chapter,String>>()
-    val drillCompleteAwardLiveDate:LiveData<Pair<Chapter,String>> = _drillCompleteAwardLiveDate
+    private val _drillCompleteAwardLiveDate = MutableLiveData<Pair<Chapter, String>>()
+    val drillCompleteAwardLiveDate: LiveData<Pair<Chapter, String>> = _drillCompleteAwardLiveDate
 
     private suspend fun waitForPerformanceCompleteSuspend() {
         samplingAmplitudeLiveDate.observeForever(samplingAmplitudeObserver.apply { reset() })
@@ -136,7 +148,6 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
-
 
 
     private val samplingHeartBeatMutalbeLiveDate = MutableLiveData<Int>()
@@ -156,21 +167,44 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
         super.onCleared()
     }
 
-    private fun onChapterDrillComplete(chapter: Chapter, chapterPerformanceDuration: Long) {
+    private fun onChapterDrillComplete(
+        chapter: Chapter,
+        chapterPerformanceDurationInSeconds: Long
+    ) {
         // only record performance longer than possible duration
         chapter.status.set(false)
         // only record performance for reasonable duration
-//        if (chapterPerformanceDuration > (chapter.snippetList?.size
-//                ?: Int.MAX_VALUE) * SINGLE_SNIPPET_DURATION
-//        )
-//        {
+        if (chapterPerformanceDurationInSeconds > (chapter.snippetList?.size
+                ?: Int.MAX_VALUE) * SINGLE_SNIPPET_DURATION_IN_SECONDS
+        ) {
             chapter.apply {
                 val original = drillCount.get()
                 drillCount.set(original + 1)
             }
-            _drillCompleteAwardLiveDate.postValue(Pair(chapter,pianoRepository.awardGifUrlList.random()))
+            _drillCompleteAwardLiveDate.postValue(
+                Pair(
+                    chapter,
+                    pianoRepository.awardGifUrlList.random()
+                )
+            )
             pianoRepository.updateDrillCount(chapter)
-//        }
+
+            AnalyticsUtil.logABRSMAdapterDrillComplete(
+                bookInRepo.value?.name ?: "",
+                chapter.name,
+                chapter.drillCount.get(),
+                chapterPerformanceDurationInSeconds.toInt()
+            )
+        } else {
+
+
+            AnalyticsUtil.logABRSMAdapterDrillFailed(
+                bookInRepo.value?.name ?: "",
+                chapter.name,
+                chapter.drillCount.get(),
+                chapterPerformanceDurationInSeconds.toInt()
+            )
+        }
     }
 
 }

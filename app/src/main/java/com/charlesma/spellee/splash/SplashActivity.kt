@@ -1,5 +1,6 @@
 package com.charlesma.spellee.splash
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -87,7 +88,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_LOGIN){
+        if(requestCode == REQUEST_CODE_LOGIN && resultCode == Activity.RESULT_OK){
             startActivity(Intent(this.applicationContext, MainActivity::class.java))
         }
     }
@@ -152,7 +153,7 @@ class SplashActivity : AppCompatActivity() {
          * If [AUTO_HIDE] is set, the number of milliseconds to wait after
          * user interaction before hiding the system UI.
          */
-        private val AUTO_HIDE_DELAY_MILLIS = 3000
+        private val AUTO_HIDE_DELAY_MILLIS = 6000
 
         /**
          * Some older devices needs a small delay between UI widget updates

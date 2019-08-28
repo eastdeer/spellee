@@ -29,6 +29,8 @@ import android.content.Context
 import android.app.KeyguardManager
 import android.view.WindowManager
 import com.charlesma.spellee.R
+import com.charlesma.spellee.util.AnalyticsUtil
+import com.google.firebase.analytics.FirebaseAnalytics
 
 
 abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -77,6 +79,7 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         val navController = findNavController(R.id.fragment_navihost)
         toolbar.setupWithNavController(navController, appBarConf)
 
+        AnalyticsUtil.mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     @LayoutRes

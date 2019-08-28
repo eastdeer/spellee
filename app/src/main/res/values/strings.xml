@@ -54,6 +54,9 @@
     <!--Score UI-->
     <string name="title_activity_score">Scores</string>
 
+    <string name="splash_activity_title">Let\'s sprint and persevere</string>
+    <string name="splash_activity_slogan">my lovely family</string>
+
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>

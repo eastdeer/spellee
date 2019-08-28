@@ -13,8 +13,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.charlesma.spellee.base.BaseActivity
 import com.charlesma.spellee.splash.SplashActivity
+import com.charlesma.spellee.util.AnalyticsUtil
 import com.charlesma.spellee.viewmodel.MainActivityViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -97,7 +99,7 @@ class MainActivity : BaseActivity() {
 //            .setMinimumFetchIntervalInSeconds(4200)
             .build()
         remoteConfig.setConfigSettings(configSettings)
-        remoteConfig.fetch(60).addOnCompleteListener { task ->
+        remoteConfig.fetch(3600).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(
                     this@MainActivity, "Fetch Succeeded",

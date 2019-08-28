@@ -8,6 +8,8 @@ import androidx.lifecycle.map
 import com.charlesma.spellee.R
 import com.charlesma.spellee.login.data.LoginRepository
 import com.charlesma.spellee.login.data.Result
+import com.charlesma.spellee.util.AnalyticsUtil
+import com.google.firebase.analytics.FirebaseAnalytics
 
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
@@ -20,6 +22,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     fun loginOrSignup(username: String, password: String): LiveData<LoginResult> {
         val emailExistingValue = _emailExistingLiveData.value
         if (emailExistingValue is Result.Success && emailExistingValue?.data) {
+
+            AnalyticsUtil.logEvent(FirebaseAnalytics.Event.LOGIN)
             return loginRepository.login(username, password).map { result ->
 
                 if (result is Result.Success) {
@@ -31,6 +35,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             }
 
         } else {
+            AnalyticsUtil.logEvent(FirebaseAnalytics.Event.SIGN_UP)
+
             return loginRepository.signup(username, password).map { result ->
 
                 if (result is Result.Success) {

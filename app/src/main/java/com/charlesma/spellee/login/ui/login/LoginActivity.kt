@@ -108,6 +108,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        setResult(Activity.RESULT_CANCELED)
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {

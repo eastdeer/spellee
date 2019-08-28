@@ -171,6 +171,20 @@ class PianoDashBoardFragment : Fragment() {
             activityViewModel.textToSpeechLiveData.postValue("${it.first}")
             if(it.second>=0) {
                 recycler_view.smoothScrollToPosition(it.second)
+
+                if(it.second>0){
+                    recycler_view.findViewHolderForAdapterPosition(it.second-1)?.let{viewHolder->
+                        (viewHolder as SnippetAdapter.SnippetViewHolder).binding.musicNote.apply {
+                            rotationY = 0f
+                        }
+                    }
+                }
+                recycler_view.findViewHolderForAdapterPosition(it.second)?.let {viewHolder ->
+                    (viewHolder as SnippetAdapter.SnippetViewHolder).binding.musicNote.apply {
+                        rotationY = 0f
+                        animate().rotationY(3600f).setDuration(10000).start()
+                    }
+                }
             }
         })
 

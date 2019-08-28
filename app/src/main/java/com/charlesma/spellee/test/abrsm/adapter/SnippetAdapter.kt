@@ -16,6 +16,7 @@ class SnippetAdapter : ListAdapter<Snippet, SnippetAdapter.SnippetViewHolder>(DI
 
     class SnippetViewHolder(val binding: RecyclerViewItemPianoSnippetBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(snippet: Snippet) {
             binding.snippet = snippet
         }
