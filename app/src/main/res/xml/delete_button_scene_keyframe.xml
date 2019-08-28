@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:motion="http://schemas.android.com/apk/res-auto"
+             xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Transition
+            motion:constraintSetStart="@+id/start"
+            motion:constraintSetEnd="@+id/end"
+            motion:duration="200">
+        <OnSwipe
+                motion:touchAnchorId="@+id/delete_button"
+                motion:touchAnchorSide="right"
+                motion:dragDirection="dragRight"/>
+
+        <KeyFrameSet>
+            <KeyPosition
+                    motion:keyPositionType="parentRelative"
+                    motion:percentX="0.8"
+                    motion:framePosition="60"
+                    motion:transitionEasing="decelerate"
+                    motion:motionTarget="@id/delete_button"
+                    />
+            <KeyPosition
+                    motion:keyPositionType="parentRelative"
+                    motion:percentX="1.5"
+                    motion:framePosition="80"
+                    motion:motionTarget="@id/delete_button"
+                    />
+            <KeyPosition
+                    motion:keyPositionType="deltaRelative"
+                    motion:percentX="1.6"
+                    motion:framePosition="98"
+                    motion:motionTarget="@id/delete_button"
+                    />
+        </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+                android:id="@id/delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintVertical_bias="0.75"
+                />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end" >
+        <Constraint
+                android:id="@id/delete_button"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_bias="0.75"
+                app:layout_constraintHorizontal_bias="1"/>
+
+    </ConstraintSet>
+
+</MotionScene>

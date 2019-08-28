@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimaryLight">#00A0AB</color>
+    <color name="colorAccent">#D81B60</color>
+
+
+    <color name="colorTitleText">#FFFFFF</color>
+    <color name="colorContentText">#000000</color>
+
+    <color name="black_overlay">#66000000</color>
+
+    <color name="recyclerview_item_current">@color/colorAccent</color>
+    <color name="recyclerview_item_passed">@color/colorPrimaryDark</color>
+    <color name="recyclerview_item_intact">@color/colorPrimaryLight</color>
+
+</resources>

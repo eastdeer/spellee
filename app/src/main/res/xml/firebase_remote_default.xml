@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>piano_abrsm_after_words</key>
+        <value>You've completed this chapter, congratulations! ,,, To be honest, playing piano is simple, way easier than building this APP. So, never be complacent!</value>
+    </entry>
+
+</defaultsMap>
+        <!-- END xml_defaults -->

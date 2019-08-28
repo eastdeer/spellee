@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/score_nav_graph"
+            app:startDestination="@id/scoreFragment">
+    <fragment
+            android:id="@+id/scoreFragment"
+            android:name="com.charlesma.spellee.score.ScoreDashboardFragment"
+            android:label="score_dashboard"
+            >
+        <action
+                android:id="@+id/action_scoreFragment_to_scoreHistoryListFragment"
+                app:destination="@id/scoreHistoryListFragment"/>
+    </fragment>
+    <fragment
+            android:id="@+id/scoreHistoryListFragment"
+            android:name="com.charlesma.spellee.score.ScoreHistoryListFragment"
+            android:label="fragment_score_history_list"
+            tools:layout="@layout/fragment_score_history_list">
+        <action
+                android:id="@+id/action_scoreHistoryListFragment_to_scoreHistoryChartFragment"
+                app:destination="@id/scoreHistoryChartFragment"/>
+        <action
+                android:id="@+id/action_scoreHistoryListFragment_to_scoreHistoryDetailFragment"
+                app:destination="@id/scoreHistoryDetailFragment"/>
+    </fragment>
+    <fragment
+            android:id="@+id/scoreHistoryDetailFragment"
+            android:name="com.charlesma.spellee.score.ScoreHistoryDetailFragment"
+            android:label="fragment_score_history_detail"
+            tools:layout="@layout/fragment_score_history_detail"/>
+    <fragment
+            android:id="@+id/scoreHistoryChartFragment"
+            android:name="com.charlesma.spellee.score.ScoreHistoryChartFragment"
+            android:label="fragment_score_history_chart"
+            tools:layout="@layout/fragment_score_history_chart"/>
+    <action
+            android:id="@+id/action_global_scoreHistoryListFragment"
+            app:destination="@id/scoreHistoryListFragment"/>
+
+</navigation>

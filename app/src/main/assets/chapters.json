@@ -1,0 +1,46 @@
+{
+  "name":"ABRSM GRADE8",
+  "chapters": [
+    {
+      "name": "Chapter 10",
+      "description": "A minor to F minor",
+      "snippetList": [
+        {
+          "name": "A minor",
+          "description": "",
+          "midi": ""
+        },
+        {
+          "name": "B minor",
+          "description": "",
+          "midi": ""
+        },
+        {
+          "name": "C minor",
+          "description": "",
+          "midi": ""
+        },
+        {
+          "name": "D minor",
+          "description": "",
+          "midi": ""
+        },
+        {
+          "name": "E minor",
+          "description": "",
+          "midi": ""
+        },
+        {
+          "name": "F minor",
+          "description": "",
+          "midi": ""
+        },
+        {
+          "name": "F minor",
+          "description": "",
+          "midi": ""
+        }
+      ]
+    }
+  ]
+}

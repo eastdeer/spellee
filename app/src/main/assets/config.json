@@ -1,0 +1,134 @@
+{
+  "piano_abrsm_chapters": {
+    "name": "ABRSM GRADE8",
+    "chapters": [
+      {
+        "name": "Chapter 6",
+        "description": "A minor to F minor",
+        "snippetList": [
+          {
+            "name": "A minor 6",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "B minor 6",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "C minor 6",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "D minor 6",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "E minor 6",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "F minor 6",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "F minor 6",
+            "description": "",
+            "midi": ""
+          }
+        ]
+      },
+      {
+        "name": "Chapter 8",
+        "description": "A minor to F minor",
+        "snippetList": [
+          {
+            "name": "A minor 8",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "B minor 8",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "C minor 8",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "D minor 8",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "E minor 8",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "F minor 8",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "F minor 8",
+            "description": "",
+            "midi": ""
+          }
+        ]
+      },
+      {
+        "name": "Chapter 9",
+        "description": "A minor to F minor",
+        "snippetList": [
+          {
+            "name": "A minor 9",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "B minor 9",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "C minor 9",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "D minor 9",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "E minor 9",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "F minor 9",
+            "description": "",
+            "midi": ""
+          },
+          {
+            "name": "F minor 9",
+            "description": "",
+            "midi": ""
+          }
+        ]
+      }
+    ]
+  },
+  "award_gif_list": [
+    "https://media.giphy.com/media/PPjpkwhdaQJsU2mXPw/giphy.gif"
+  ],
+  "piano_abrsm_after_words": "You're a deligent kid"
+}

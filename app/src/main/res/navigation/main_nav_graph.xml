@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_nav_graph"
+        app:startDestination="@id/dashBoardFragment">
+
+    <fragment
+            android:id="@+id/dashBoardFragment"
+            android:name="com.charlesma.spellee.DashBoardFragment"
+            android:label="fragment_dash_board"
+            tools:layout="@layout/fragment_dash_board">
+        <action
+                android:id="@+id/action_dashBoardFragment_to_spellingBeeFragment"
+                app:destination="@id/spellingBeeFragment" />
+        <action
+                android:id="@+id/action_dashBoardFragment_to_rankFragment"
+                app:destination="@id/rankFragment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/spellingBeeFragment"
+            android:name="com.charlesma.spellee.test.SpellingBeeTestFragment"
+            android:label="fragment_spelling_bee"
+            tools:layout="@layout/fragment_spelling_bee"></fragment>
+    <navigation
+            android:id="@+id/navigationWordList"
+            app:startDestination="@id/wordListFragment">
+        <fragment
+                android:id="@+id/wordListFragment"
+                android:name="com.charlesma.spellee.word.WordListFragment"
+                android:label="fragment_word_list"
+                tools:layout="@layout/fragment_word_list">
+            <action
+                    android:id="@+id/action_wordListFragment_to_officialWordListFragment"
+                    app:destination="@id/officialWordListFragment" />
+        </fragment>
+        <fragment
+                android:id="@+id/officialWordListFragment"
+                android:name="com.charlesma.spellee.word.OfficialWordListFragment"
+                android:label="fragment_official_word_list"
+                tools:layout="@layout/fragment_official_word_list" />
+    </navigation>
+
+    <navigation
+            android:id="@+id/navigation_score"
+            app:startDestination="@id/scoreFragment">
+        <fragment
+                android:id="@+id/scoreFragment"
+                android:name="com.charlesma.spellee.score.ScoreDashboardFragment"
+                android:label="score_dashboard">
+            <action
+                    android:id="@+id/action_scoreFragment_to_scoreHistoryListFragment"
+                    app:destination="@id/scoreHistoryListFragment" />
+        </fragment>
+        <fragment
+                android:id="@+id/scoreHistoryListFragment"
+                android:name="com.charlesma.spellee.score.ScoreHistoryListFragment"
+                android:label="fragment_score_history_list"
+                tools:layout="@layout/fragment_score_history_list">
+            <action
+                    android:id="@+id/action_scoreHistoryListFragment_to_scoreHistoryChartFragment"
+                    app:destination="@id/scoreHistoryChartFragment" />
+            <action
+                    android:id="@+id/action_scoreHistoryListFragment_to_scoreHistoryDetailFragment"
+                    app:destination="@id/scoreHistoryDetailFragment" />
+        </fragment>
+        <fragment
+                android:id="@+id/scoreHistoryDetailFragment"
+                android:name="com.charlesma.spellee.score.ScoreHistoryDetailFragment"
+                android:label="fragment_score_history_detail"
+                tools:layout="@layout/fragment_score_history_detail" />
+        <fragment
+                android:id="@+id/scoreHistoryChartFragment"
+                android:name="com.charlesma.spellee.score.ScoreHistoryChartFragment"
+                android:label="fragment_score_history_chart"
+                tools:layout="@layout/fragment_score_history_chart" />
+        <action
+                android:id="@+id/action_global_scoreHistoryListFragment"
+                app:destination="@id/scoreHistoryListFragment" />
+
+    </navigation>
+    <navigation
+            android:id="@+id/navigationCurriculum"
+            app:startDestination="@id/customTestListFragment">
+        <fragment
+                android:id="@+id/customTestListFragment"
+                android:name="com.charlesma.spellee.test.CustomTestListFragment"
+                android:label="fragment_custom_test_list"
+                tools:layout="@layout/fragment_custom_test_list"></fragment>
+    </navigation>
+
+    <action
+            android:id="@+id/action_global_navigationWordList"
+            app:destination="@id/navigationWordList" />
+    <action
+            android:id="@+id/action_global_navigationCurriculum"
+            app:destination="@id/navigationCurriculum" />
+    <action
+            android:id="@+id/action_global_navigationTest"
+            app:destination="@id/navigationTest" />
+    <action
+            android:id="@+id/action_global_navigationScore"
+            app:destination="@+id/navigation_score" />
+    <fragment
+            android:id="@+id/rankFragment"
+            android:name="com.charlesma.spellee.social.RankFragment"
+            android:label="fragment_rank"
+            tools:layout="@layout/fragment_rank" />
+    <navigation
+            android:id="@+id/navigationTest"
+            app:startDestination="@id/testCompositeFragment">
+        <fragment
+                android:id="@+id/testCompositeFragment"
+                android:name="com.charlesma.spellee.test.TestCompositeFragment"
+                android:label="fragment_test_composite"
+                tools:layout="@layout/fragment_test_composite">
+            <action
+                    android:id="@+id/action_testCompositeFragment_to_pianoDashBoardFragment"
+                    app:destination="@id/pianoDashBoardFragment" />
+        </fragment>
+        <fragment
+                android:id="@+id/pianoDashBoardFragment"
+                android:name="com.charlesma.spellee.test.abrsm.PianoDashBoardFragment"
+                android:label="fragment_piano_dash_board"
+                tools:layout="@layout/fragment_piano_dash_board" />
+    </navigation>
+    <activity
+            android:id="@+id/splashActivity"
+            android:name="com.charlesma.spellee.splash.SplashActivity"
+            android:label="activity_splash"
+            tools:layout="@layout/activity_splash" />
+    <action
+            android:id="@+id/action_global_splashActivity"
+            app:destination="@id/splashActivity" />
+
+
+</navigation>

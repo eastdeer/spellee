@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".test.TestCompositeFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.28" />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.72" />
+
+    <TextView
+            android:id="@+id/btn_spellingbee"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/design_default_color_secondary"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/conventional_padding_normal"
+            android:text="@string/spellingbee_test_fragment"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintBottom_toTopOf="@+id/btn_abrsm"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right"
+            app:layout_constraintLeft_toLeftOf="@+id/guide_left"
+            app:layout_constraintRight_toRightOf="@+id/guide_right"
+            app:layout_constraintStart_toStartOf="@+id/guide_left"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+    <TextView
+            android:id="@+id/btn_abrsm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/design_default_color_secondary"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/conventional_padding_normal"
+            android:text="@string/piano_test_fragment"
+            android:textColor="@color/colorTitleText"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right"
+            app:layout_constraintLeft_toLeftOf="@+id/guide_left"
+            app:layout_constraintRight_toRightOf="@+id/guide_right"
+            app:layout_constraintStart_toStartOf="@+id/guide_left"
+            app:layout_constraintTop_toBottomOf="@+id/btn_spellingbee" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
