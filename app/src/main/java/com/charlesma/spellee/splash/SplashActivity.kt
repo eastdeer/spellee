@@ -9,6 +9,8 @@ import android.view.View
 import com.charlesma.spellee.MainActivity
 import com.charlesma.spellee.R
 import com.charlesma.spellee.login.ui.login.LoginActivity
+import com.charlesma.spellee.util.AnalyticsUtil
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_splash.*
 
@@ -64,6 +66,8 @@ class SplashActivity : AppCompatActivity() {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         dummy_button.setOnTouchListener(mDelayHideTouchListener)
+
+        AnalyticsUtil.mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     override fun onResume() {

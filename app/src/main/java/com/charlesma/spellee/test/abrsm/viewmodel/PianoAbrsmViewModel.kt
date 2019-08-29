@@ -54,9 +54,6 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
 
     val currentShuffledSnippetListLiveData =
         Transformations.map(currentChapterLiveData) {
-            viewModelScope.launch {
-                delay(2048)
-            }
             it?.snippetList?.toMutableList()?.map { snippet ->
                 snippet.apply {
                     statusColor.set(Snippet.ITEM_INTACT)
@@ -108,6 +105,9 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
                             it.drillCount.get()
                         )
                     }
+                    // wait for recycler view initialization complete
+                    delay(2048)
+
                     val performanceDuration =
                         measureTimeMillis {
                             it.forEachIndexed { index, snippet ->

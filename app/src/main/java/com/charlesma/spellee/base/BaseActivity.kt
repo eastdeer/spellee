@@ -79,7 +79,6 @@ abstract class BaseActivity : AppCompatActivity(), NavigationView.OnNavigationIt
         val navController = findNavController(R.id.fragment_navihost)
         toolbar.setupWithNavController(navController, appBarConf)
 
-        AnalyticsUtil.mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     @LayoutRes
