@@ -9,6 +9,10 @@
     <color name="colorTitleText">#FFFFFF</color>
     <color name="colorContentText">#000000</color>
 
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteTranslucent">#BBFFFFFF</color>
+    <color name="colorGrey">#888888</color>
+
     <color name="black_overlay">#66000000</color>
 
     <color name="recyclerview_item_current">@color/colorAccent</color>

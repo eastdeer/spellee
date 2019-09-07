@@ -1,7 +1,10 @@
 package com.charlesma.spellee.test.abrsm.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ListPopupWindow
+import android.widget.PopupWindow
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,7 +14,7 @@ import com.charlesma.spellee.databinding.RecyclerViewItemAbrsmChapterBinding
 import com.charlesma.spellee.test.abrsm.datamodel.Chapter
 import com.charlesma.spellee.test.abrsm.viewmodel.PianoAbrsmViewModel
 
-class ChapterAdapter(val viewModel: PianoAbrsmViewModel) : ListAdapter<Chapter, ChapterAdapter.ChapterViewHolder>(DIFF_CALLBACK) {
+class ChapterAdapter(val viewModel: PianoAbrsmViewModel,val popupAnchor: View) : ListAdapter<Chapter, ChapterAdapter.ChapterViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Chapter>() {
@@ -24,12 +27,18 @@ class ChapterAdapter(val viewModel: PianoAbrsmViewModel) : ListAdapter<Chapter, 
     }
 
 
-    class ChapterViewHolder(private val databinding: RecyclerViewItemAbrsmChapterBinding,val viewModel: PianoAbrsmViewModel) :
+    class ChapterViewHolder(private val databinding: RecyclerViewItemAbrsmChapterBinding,val viewModel: PianoAbrsmViewModel,val popupAnchor: View) :
         RecyclerView.ViewHolder(databinding.root) {
+
+
+
         fun bind(chapter: Chapter,position:Int) {
             databinding.chapter = chapter
             databinding.averageDrillLevel = viewModel.avgDrillCount
             databinding.root.setOnClickListener { viewModel.onChapterClicked(position) }
+            databinding.root.setOnLongClickListener { viewModel.onChapterLongClicked(position)
+                true
+            }
         }
 
     }
@@ -41,7 +50,7 @@ class ChapterAdapter(val viewModel: PianoAbrsmViewModel) : ListAdapter<Chapter, 
             parent,
             false
         )
-        return ChapterViewHolder(databinding,viewModel)
+        return ChapterViewHolder(databinding,viewModel,popupAnchor)
     }
 
     override fun onBindViewHolder(holder: ChapterViewHolder, position: Int) {

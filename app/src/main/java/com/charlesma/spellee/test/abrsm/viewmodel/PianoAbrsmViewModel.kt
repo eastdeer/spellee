@@ -1,16 +1,19 @@
 package com.charlesma.spellee.test.abrsm.viewmodel
 
 import android.app.Application
+import android.net.Uri
+import android.os.Environment
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import com.charlesma.spellee.test.abrsm.datamodel.Amplitude
-import com.charlesma.spellee.test.abrsm.datamodel.Chapter
-import com.charlesma.spellee.test.abrsm.datamodel.Snippet
+import com.charlesma.spellee.test.abrsm.datamodel.*
 import com.charlesma.spellee.test.abrsm.repository.PianoRepository
 import com.charlesma.spellee.util.AnalyticsUtil
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.system.measureTimeMillis
 
@@ -20,12 +23,21 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
         const val SAMPLE_AVG_COUNT = 32
         const val AMPLITUDE_THRESHOLD = 8800
         const val SINGLE_SNIPPET_DURATION_IN_SECONDS = 10
+
+        const val RECORD_OUTPUT_FILENAME = "record_output"
+        const val RECORD_UPLOAD_FILENAME = "record_upload"
     }
 
     val pianoRepository by lazy { PianoRepository(application) }
     val AFTERWORD = Snippet().apply { name = pianoRepository.pianoPerformanceAfterWords }
+    val recordDirName: String by lazy {
+        application.getExternalFilesDir(Environment.DIRECTORY_MUSIC).absolutePath
+    }
+    val inPerforming = ObservableBoolean(false)
 
-//    val userSelectedChapterMutableLiveData = liveData {  }
+
+    val _popupRecordListMutableLiveData = MutableLiveData<Pair<Boolean, Chapter>>()
+    val popupRecordListLiveData: LiveData<Pair<Boolean, Chapter>> = _popupRecordListMutableLiveData
 
     val bookInRepo = liveData {
 
@@ -35,7 +47,11 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
 
     val avgDrillCount = ObservableInt(0)
 
-    val userSelectedChapterMutableLiveData = MutableLiveData<Int>()
+    fun getRecordOutputFileName() = "$recordDirName/$RECORD_OUTPUT_FILENAME"
+
+    fun getUploadingFileName() = "$recordDirName/$RECORD_UPLOAD_FILENAME"
+
+    private val userSelectedChapterMutableLiveData = MutableLiveData<Int>()
     val currentChapterLiveData =
         Transformations.map(userSelectedChapterMutableLiveData) {
             bookInRepo.value?.chapters?.run {
@@ -94,37 +110,74 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
 
     val currentSnippetLiveData =
         Transformations.switchMap(currentShuffledSnippetListLiveData) { value ->
-
+            var uploadJob: Job? = null
             liveData {
+
                 value?.let {
 
-                    currentChapterLiveData.value?.let {
+                    currentChapterLiveData.value?.let { chapter ->
                         AnalyticsUtil.logABRSMAdapterDrillStart(
                             bookInRepo.value?.name ?: "",
-                            it.name,
-                            it.drillCount.get()
+                            chapter.name,
+                            chapter.drillCount.get()
                         )
-                    }
-                    // wait for recycler view initialization complete
-                    delay(2048)
+                        // wait for recycler view initialization complete
+                        onChapterDrillStart(
+                            bookInRepo.value?.name ?: "", chapter
+                        )
 
-                    val performanceDuration =
-                        measureTimeMillis {
-                            it.forEachIndexed { index, snippet ->
-                                snippet.apply {
-                                    statusColor.set(Snippet.ITEM_CURRENT)
-                                }
-                                emit(Pair("Please Perform.. ${snippet.name}", index))
-                                waitForPerformanceCompleteSuspend()
-                                snippet.apply {
-                                    statusColor.set(Snippet.ITEM_PASSED)
+                        delay(2048)
+
+                        samplingHeartBeatMutalbeLiveDate.value = Amplitude.SIG_START_ONE_RECORD
+
+                        val performanceDuration =
+                            measureTimeMillis {
+                                it.forEachIndexed { index, snippet ->
+                                    snippet.apply {
+                                        statusColor.set(Snippet.ITEM_CURRENT)
+                                    }
+                                    emit(Pair("Please Perform.. ${snippet.name}", index))
+                                    waitForPerformanceCompleteSuspend()
+                                    snippet.apply {
+                                        statusColor.set(Snippet.ITEM_PASSED)
+                                    }
                                 }
                             }
-                        }
-                    emit(Pair("Chapter finished. ${AFTERWORD.name}", -1))
 
-                    currentChapterLiveData.value?.let { chapter ->
+
+                        samplingHeartBeatMutalbeLiveDate.value = Amplitude.SIG_STOP_ONE_RECORD
+
+
+                        val unFormatedFileName =
+                            SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(Date(System.currentTimeMillis()))
+                        val firebaseUploadingFileName =
+                            pianoRepository.getFireBaseValidName(unFormatedFileName)
+                        chapter.addNewRecordFile(
+                            firebaseUploadingFileName,
+                            pianoRepository.pianoCloudFileMaxCount
+                        )
+
+                        uploadJob?.cancel()
+                        uploadJob = viewModelScope.launch {
+                            // 1. rename record file
+                            pianoRepository.moveRecordFileToUploadFile(
+                                getRecordOutputFileName(),
+                                getUploadingFileName()
+                            )
+                            // 2. upload record file
+                            pianoRepository.uploadRecordFile(
+                                bookInRepo.value?.name ?: "",
+                                chapter,
+                                getUploadingFileName(),
+                                firebaseUploadingFileName
+                            )
+                        }
+
+
+                        emit(Pair("Chapter finished. ${AFTERWORD.name}", -1))
+
                         onChapterDrillComplete(
+                            bookInRepo.value?.name ?: "",
                             chapter,
                             performanceDuration shr 10
                         )
@@ -161,13 +214,34 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
     }
 
 
+    fun onChapterLongClicked(index: Int) {
+        if (bookInRepo.value != null) {
+            val chapter = bookInRepo.value!!.chapters[index]
+            pianoRepository.refreshChapterRecordFileListAsync(
+                chapter,
+                bookInRepo.value!!.name,
+                chapter.name
+            )
+            _popupRecordListMutableLiveData.postValue(Pair(true, chapter))
+        }
+    }
+
+
     override fun onCleared() {
         samplingAmplitudeLiveDate.removeObserver(samplingAmplitudeObserver)
-        samplingHeartBeatMutalbeLiveDate.postValue(Amplitude.SIG_STOP)
+        samplingHeartBeatMutalbeLiveDate.postValue(Amplitude.SIG_CLEAR)
         super.onCleared()
     }
 
+    private fun onChapterDrillStart(
+        bookName: String,
+        chapter: Chapter
+    ) {
+        inPerforming.set(true)
+    }
+
     private fun onChapterDrillComplete(
+        bookName: String,
         chapter: Chapter,
         chapterPerformanceDurationInSeconds: Long
     ) {
@@ -187,7 +261,7 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
                     pianoRepository.awardGifUrlList.random()
                 )
             )
-            pianoRepository.updateDrillCount(chapter)
+            pianoRepository.updateFireStore(bookName, chapter)
 
             AnalyticsUtil.logABRSMAdapterDrillComplete(
                 bookInRepo.value?.name ?: "",
@@ -205,6 +279,25 @@ class PianoAbrsmViewModel(application: Application) : AndroidViewModel(applicati
                 chapterPerformanceDurationInSeconds.toInt()
             )
         }
+        inPerforming.set(false)
     }
 
+
+    private val _statusMutableLiveData = MutableLiveData<GenericDataWithStatus>()
+    val statusLiveData: LiveData<GenericDataWithStatus> = _statusMutableLiveData
+
+    private val _recordUriLivaData = MutableLiveData<Pair<Chapter, Uri>>()
+    val recordUriLivaData: LiveData<Pair<Chapter, Uri>> = _recordUriLivaData
+    fun onCloudRecordFileClicked(chapter: Chapter, index: Int) {
+        if (inPerforming.get()) {
+            _statusMutableLiveData.postValue(GenericDataWithStatus(UIStatus.STATUS_PERFORMING, ""))
+        } else {
+            pianoRepository.getChapterRecordFileUrl(
+                bookInRepo.value!!.name,
+                chapter,
+                index,
+                fun(uri: Uri) { _recordUriLivaData.postValue(Pair(chapter, uri)) })
+            _statusMutableLiveData.postValue(GenericDataWithStatus(UIStatus.STATUS_IDLE, chapter))
+        }
+    }
 }

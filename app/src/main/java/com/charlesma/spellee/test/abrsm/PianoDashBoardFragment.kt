@@ -6,19 +6,20 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment.DIRECTORY_MUSIC
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import android.widget.ListPopupWindow
+import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.*
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -30,12 +31,18 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.charlesma.spellee.R
 import com.charlesma.spellee.test.abrsm.adapter.ChapterAdapter
+import com.charlesma.spellee.test.abrsm.adapter.CloudRecordFileAdapter
+import com.charlesma.spellee.test.abrsm.adapter.CloudRecordFileAdapter2
 import com.charlesma.spellee.test.abrsm.adapter.SnippetAdapter
 import com.charlesma.spellee.test.abrsm.datamodel.Chapter
+import com.charlesma.spellee.test.abrsm.datamodel.CloudRecordFile
 import com.charlesma.spellee.test.abrsm.sound.SoundDetector
 import com.charlesma.spellee.test.abrsm.viewmodel.PianoAbrsmViewModel
 import com.charlesma.spellee.viewmodel.MainActivityViewModel
+import com.charlesma.spellee.widget.popup.ExoPlayerFragmentDirections
 import kotlinx.android.synthetic.main.fragment_piano_dash_board.*
+import kotlinx.android.synthetic.main.popup_window_could_file_list.*
+import java.io.File
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,6 +62,9 @@ class PianoDashBoardFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
+
+    var listPopupWindow: ListPopupWindow? = null
+    var popupWindow: PopupWindow? = null
 
     private lateinit var soundDetector: SoundDetector
 
@@ -145,7 +155,7 @@ class PianoDashBoardFragment : Fragment() {
         chapter_recyclerview.layoutManager =
             StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
 //        chapter_recyclerview.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
-        val chapterAdapter = ChapterAdapter(viewmodel)
+        val chapterAdapter = ChapterAdapter(viewmodel, chapter_recyclerview)
         chapter_recyclerview.adapter = chapterAdapter
         chapter_recyclerview.itemAnimator = DefaultItemAnimator()
 
@@ -169,17 +179,18 @@ class PianoDashBoardFragment : Fragment() {
         viewmodel.currentSnippetLiveData.observe(this, Observer {
             // read the name aloud
             activityViewModel.textToSpeechLiveData.postValue("${it.first}")
-            if(it.second>=0) {
+            if (it.second >= 0) {
                 recycler_view.smoothScrollToPosition(it.second)
 
-                if(it.second>0){
-                    recycler_view.findViewHolderForAdapterPosition(it.second-1)?.let{viewHolder->
-                        (viewHolder as SnippetAdapter.SnippetViewHolder).binding.musicNote.apply {
-                            rotationY = 0f
+                if (it.second > 0) {
+                    recycler_view.findViewHolderForAdapterPosition(it.second - 1)
+                        ?.let { viewHolder ->
+                            (viewHolder as SnippetAdapter.SnippetViewHolder).binding.musicNote.apply {
+                                rotationY = 0f
+                            }
                         }
-                    }
                 }
-                recycler_view.findViewHolderForAdapterPosition(it.second)?.let {viewHolder ->
+                recycler_view.findViewHolderForAdapterPosition(it.second)?.let { viewHolder ->
                     (viewHolder as SnippetAdapter.SnippetViewHolder).binding.musicNote.apply {
                         rotationY = 0f
                         animate().rotationY(3600f).setDuration(10000).start()
@@ -193,11 +204,14 @@ class PianoDashBoardFragment : Fragment() {
             chapter_recyclerview.postInvalidate()
         })
 
+        val outputFileName =
+            viewmodel.getRecordOutputFileName()
 
         soundDetector = SoundDetector(
             lifecycle,
             viewmodel.samplingHeartBeatLiveDate,
-            viewmodel.samplingAmplitudeLiveDate
+            viewmodel.samplingAmplitudeLiveDate,
+            outputFileName
         )
 
 
@@ -207,7 +221,7 @@ class PianoDashBoardFragment : Fragment() {
         })
 
 
-        viewmodel.drillCompleteAwardLiveDate.observe(this, Observer { (chapter,awardGifUrl) ->
+        viewmodel.drillCompleteAwardLiveDate.observe(this, Observer { (chapter, awardGifUrl) ->
             context?.let {
                 val chapterPosition = chapterAdapter.currentList?.indexOf(chapter)
 
@@ -219,7 +233,8 @@ class PianoDashBoardFragment : Fragment() {
 
                 if (drillCountTv != null) {
                     // text
-                    ObjectAnimator.ofFloat(drillCountTv, "alpha", 0f,1f,0f,1f,0f,1f,0f,1f).setDuration(6148).start()
+                    ObjectAnimator.ofFloat(drillCountTv, "alpha", 0f, 1f, 0f, 1f, 0f, 1f, 0f, 1f)
+                        .setDuration(6148).start()
 
                     // Gif
                     Glide.with(it).asGif()
@@ -240,6 +255,85 @@ class PianoDashBoardFragment : Fragment() {
         })
 
 
+        viewmodel.popupRecordListLiveData.observe(this, Observer {
+
+            if (it.first) {
+                if (listPopupWindow == null) {
+                    val adapter = CloudRecordFileAdapter(it.second)
+                    val newPopupWindow = ListPopupWindow(context)
+                    newPopupWindow.promptPosition = ListPopupWindow.POSITION_PROMPT_BELOW
+
+                    val indexInAdapter = chapterAdapter.currentList.indexOf(it.second)
+                    val clickedChapterView =
+                        chapter_recyclerview.findViewHolderForAdapterPosition(indexInAdapter)
+
+                    newPopupWindow.anchorView = clickedChapterView?.itemView
+                    newPopupWindow.setAdapter(adapter)
+                    newPopupWindow.setOnItemClickListener { parent, view, position, id ->
+                        viewmodel.onCloudRecordFileClicked(it.second, position)
+                        newPopupWindow.dismiss()
+                    }
+                    listPopupWindow = newPopupWindow
+                }
+                listPopupWindow?.let { listPopupWindow ->
+                    //                    listPopupWindow.show()
+                }
+
+                if (popupWindow == null) {
+                    val popupWindowContent = LayoutInflater.from(context)
+                        .inflate(R.layout.popup_window_could_file_list, view as ViewGroup, false)
+                    val recordFileRecyclerview: RecyclerView =
+                        popupWindowContent.findViewById(R.id.recordFileRecyclerview)
+                    recordFileRecyclerview.layoutManager =
+                        LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                    popupWindow = PopupWindow(
+                        popupWindowContent,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                    )
+                }
+
+                val indexInAdapter = chapterAdapter.currentList.indexOf(it.second)
+                val clickedChapterView =
+                    chapter_recyclerview.findViewHolderForAdapterPosition(indexInAdapter)
+
+                popupWindow?.let { popupWindow ->
+                    // popupWindow.animationStyle
+                    popupWindow.elevation =
+                        resources.getDimension(R.dimen.conventional_margin_normal)
+                    popupWindow.contentView.findViewById<RecyclerView>(R.id.recordFileRecyclerview)
+                        .apply {
+                            adapter = CloudRecordFileAdapter2(it.second).apply {
+                                itemClickListener = fun(
+                                    chapter: Chapter,
+                                    cloudFile: CloudRecordFile,
+                                    index: Int
+                                ) {
+                                    viewmodel.onCloudRecordFileClicked(chapter, index)
+                                }
+                            }
+                        }
+
+                    popupWindow.update()
+                    popupWindow.elevation =
+                        resources.getDimension(R.dimen.conventional_margin_normal)
+                    popupWindow.showAsDropDown(clickedChapterView?.itemView)
+
+                }
+
+
+            } else {
+                listPopupWindow?.let { listPopupWindow ->
+                    listPopupWindow.dismiss()
+                }
+            }
+        })
+
+        viewmodel.recordUriLivaData.observe(this, Observer {
+            openExoPlayerWithMediaUri(it.first, it.second)
+        })
+
     }
 
     private fun enableChapters() {
@@ -248,6 +342,16 @@ class PianoDashBoardFragment : Fragment() {
 
     private fun disableChapters() {
         chapter_recyclerview.isEnabled = false
+    }
+
+    private fun openExoPlayerWithMediaUri(chapter: Chapter, uri: Uri) {
+        val action =
+            PianoDashBoardFragmentDirections.actionPianoDashBoardFragmentToExoPlayerFragment2(
+                chapter.name,
+                uri,
+                "Recorded File"
+            )
+        findNavController().navigate(action)
     }
 
     class GifRewardImageTarget(imageView: ImageView, val coordinate: Pair<Float, Float>) :
@@ -297,7 +401,7 @@ class PianoDashBoardFragment : Fragment() {
 
                             }
 
-                            private fun restoreViewLayout(){
+                            private fun restoreViewLayout() {
                                 view.scaleX = 1.0f
                                 view.scaleY = 1.0f
                                 view.x = originalX

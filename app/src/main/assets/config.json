@@ -130,5 +130,6 @@
   "award_gif_list": [
     "https://media.giphy.com/media/PPjpkwhdaQJsU2mXPw/giphy.gif"
   ],
-  "piano_abrsm_after_words": "You're a deligent kid"
+  "piano_abrsm_after_words": "You're a deligent kid",
+  "piano_cloud_file_max_count": 3
 }

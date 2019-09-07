@@ -123,7 +123,27 @@
                 android:id="@+id/pianoDashBoardFragment"
                 android:name="com.charlesma.spellee.test.abrsm.PianoDashBoardFragment"
                 android:label="fragment_piano_dash_board"
-                tools:layout="@layout/fragment_piano_dash_board" />
+                tools:layout="@layout/fragment_piano_dash_board" >
+            <action
+                    android:id="@+id/action_pianoDashBoardFragment_to_exoPlayerFragment2"
+                    app:destination="@id/exoPlayerFragment2" />
+        </fragment>
+        <dialog
+                android:id="@+id/exoPlayerFragment2"
+                android:name="com.charlesma.spellee.widget.popup.ExoPlayerFragment"
+                android:label="ExoPlayerFragment" >
+            <argument
+                    android:name="chapterName"
+                    app:argType="string"
+                    app:nullable="true" />
+            <argument
+                    android:name="cloudFileUri"
+                    app:argType="android.net.Uri" />
+            <argument
+                    android:name="cloudFileName"
+                    app:argType="string"
+                    app:nullable="true" />
+        </dialog>
     </navigation>
     <activity
             android:id="@+id/splashActivity"
@@ -133,6 +153,10 @@
     <action
             android:id="@+id/action_global_splashActivity"
             app:destination="@id/splashActivity" />
+    <dialog
+            android:id="@+id/exoPlayerFragment"
+            android:name="com.charlesma.spellee.widget.popup.ExoPlayerFragment"
+            android:label="ExoPlayerFragment" />
 
 
 </navigation>
